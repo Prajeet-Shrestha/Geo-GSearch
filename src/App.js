@@ -59,23 +59,41 @@ function App() {
   return (
     <div className='App'>
       <div className='top'>
-        <SearchBar
-          setCountryDropdownStat={setCountryDropdownStat}
-          countryDropdownStat={countryDropdownStat}
-          selectedCountry={selectedCountry}
-          handleFilterCountry={handleFilterCountry}
-          setSearchKeyInput={setSearchKeyInput}
-          handleSearch={handleSearch}
-          SearchKeyInput={SearchKeyInput}
-          setSearchResultItems={setSearchResultItems}
-          viewCountryList={viewCountryList}
-          handleSelectCountry={handleSelectCountry}
-          handleClearSearch={handleClearSearch}
-        />
+        {SearchResultItems.length >= 1 ? (
+          <SearchBar
+            setCountryDropdownStat={setCountryDropdownStat}
+            countryDropdownStat={countryDropdownStat}
+            selectedCountry={selectedCountry}
+            handleFilterCountry={handleFilterCountry}
+            setSearchKeyInput={setSearchKeyInput}
+            handleSearch={handleSearch}
+            SearchKeyInput={SearchKeyInput}
+            setSearchResultItems={setSearchResultItems}
+            viewCountryList={viewCountryList}
+            handleSelectCountry={handleSelectCountry}
+            handleClearSearch={handleClearSearch}
+          />
+        ) : null}
       </div>
       {!(SearchResultItems.length >= 1) ? (
         <div className='initial-home'>
           <Home />
+          <SearchBar
+            setCountryDropdownStat={setCountryDropdownStat}
+            countryDropdownStat={countryDropdownStat}
+            selectedCountry={selectedCountry}
+            handleFilterCountry={handleFilterCountry}
+            setSearchKeyInput={setSearchKeyInput}
+            handleSearch={handleSearch}
+            SearchKeyInput={SearchKeyInput}
+            setSearchResultItems={setSearchResultItems}
+            viewCountryList={viewCountryList}
+            handleSelectCountry={handleSelectCountry}
+            handleClearSearch={handleClearSearch}
+          />
+          <p className='footerNote'>
+            Created and designed by <a href='https://prajeetshrestha.com.np/'>Prajeet</a>
+          </p>
         </div>
       ) : null}
       {SearchResultItems.length >= 1 ? (

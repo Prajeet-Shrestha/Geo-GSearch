@@ -7,7 +7,7 @@
   align-items: center;
   width: 100%;
   //   margin: 0 auto;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
+  // box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.08);
   border-radius: 4px;
   span {
     width: fit-content;
@@ -47,6 +47,16 @@
   .cancelBtn,
   .searchBtn {
     cursor: pointer;
+    svg path {
+      fill: #1a0dabb1;
+    }
+    &:hover {
+      svg {
+        path {
+          fill: #1a0dab;
+        }
+      }
+    }
   }
 
   .box {
