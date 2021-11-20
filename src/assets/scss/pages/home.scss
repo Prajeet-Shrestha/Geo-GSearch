@@ -1,0 +1,19 @@
+.App {
+  margin: 0 auto;
+  max-width: 720px;
+  @media (max-width: 720px) {
+    max-width: 98%;
+  }
+  .top {
+    padding-top: 20px;
+  }
+
+  .search-result {
+    width: 95%;
+    margin: 0 auto;
+    #result-number {
+      font-size: 0.8rem;
+      color: gray;
+    }
+  }
+}

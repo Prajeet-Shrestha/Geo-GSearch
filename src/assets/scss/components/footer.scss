@@ -1,0 +1,122 @@
+.page-bar {
+  margin-top: 100px;
+  .page-list {
+    list-style: none;
+    color: rgb(29, 135, 255);
+    display: flex;
+    flex-direction: row;
+    font-size: 12px;
+    margin-bottom: 30px;
+    margin-left: 100px;
+    li {
+      margin-right: 15px;
+      position: relative;
+    }
+    .page-list-previous {
+      &::before {
+        content: '<';
+        display: block;
+        position: absolute;
+        right: 12px;
+        top: -35px;
+        color: rgb(29, 135, 255);
+        font-size: 20px;
+        transform: scale(0.7, 1.2);
+      }
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        right: -40px;
+        top: -35px;
+        width: 40px;
+        height: 40px;
+        background-repeat: no-repeat;
+        background-size: 28px;
+      }
+    }
+
+    .page-list-first {
+      margin-left: 20px;
+      font-size: 13px;
+      &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: -2px;
+        top: -21px;
+        border-radius: 50px;
+        width: 10px;
+        height: 10px;
+        background-color: white;
+        z-index: 3;
+      }
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: -6px;
+        top: -25px;
+        border-radius: 50px;
+        width: 18px;
+        height: 18px;
+        background-color: red;
+        z-index: 2;
+      }
+    }
+    .page-list-number {
+      &::before {
+        content: '';
+        display: block;
+        position: absolute;
+        left: -2px;
+        top: -21px;
+        border-radius: 50px;
+        width: 10px;
+        height: 10px;
+        background-color: white;
+        z-index: 3;
+      }
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: -6px;
+        top: -25px;
+        border-radius: 50px;
+        width: 18px;
+        height: 18px;
+        background-color: rgb(255, 196, 0);
+        z-index: 2;
+      }
+    }
+
+    .page-list-next {
+      margin-left: 40px;
+      font-size: 13px;
+
+      &::before {
+        content: '>';
+        display: block;
+        position: absolute;
+        left: 5px;
+        top: -35px;
+        color: rgb(29, 135, 255);
+        font-size: 20px;
+        transform: scale(0.7, 1.2);
+      }
+
+      &::after {
+        content: '';
+        display: block;
+        position: absolute;
+        left: -55px;
+        top: -37px;
+        width: 50px;
+        height: 50px;
+        background-repeat: no-repeat;
+        background-size: 48px;
+      }
+    }
+  }
+}
