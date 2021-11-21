@@ -11,7 +11,7 @@ export default function Error({ isQuoteFull }) {
         </p>
         <p className='body'>
           {isQuoteFull
-            ? "The service has a reached today's max threshold. Please try again in 24 hours."
+            ? "The service has reached today's max threshold. Please try again in 24 hours."
             : "The service is currently offline.That's all we know."}
         </p>
         <p className='footerNote'>
