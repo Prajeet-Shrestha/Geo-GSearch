@@ -1,5 +1,7 @@
 import react, { useState, useEffect } from 'react';
 import countryList from './assets/country-code/country.json';
+import languageList from './assets/country-code/lang.json';
+
 import { G_Search } from './assets/apis/search';
 import SearchItem from './components/searchItem';
 import SearchBar from './components/searchBar';
@@ -11,6 +13,8 @@ function App() {
   const [viewCountryList, setViewCountryList] = useState([]);
   const [SearchKeyInput, setSearchKeyInput] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('np');
+  const [selectedLang, setSelectedLang] = useState('np');
+
   const [searchInformation, setSearchInformation] = useState({
     searchTime: 0,
     formattedSearchTime: '0',
@@ -35,15 +39,27 @@ function App() {
     };
   };
 
+  const getLang = (country) => {
+    let res = languageList.filter((data) => data.lang.toLowerCase().includes(country.toLowerCase()));
+    if (res.length >= 1) {
+      return res[0];
+    } else {
+      return false;
+    }
+  };
+
   const handleSearch = async (searchWords, country) => {
     const { q, exactTerms } = await parseSearchKeyWords(searchWords);
-    G_Search(q, country, exactTerms).then(async (res) => {
-      console.log(res.data.items);
+    console.log(getLang(country));
+    G_Search(q, country, exactTerms, country).then(async (res) => {
+      // console.log(res);
+      // console.log(res.data.items);
+
       const items = res.data.items;
       await setSearchResultItems(items);
       await setSearchInformation(res.data.searchInformation);
 
-      console.log(SearchResultItems);
+      // console.log(SearchResultItems);
     });
   };
 
@@ -55,7 +71,6 @@ function App() {
     setSelectedCountry(value);
     setCountryDropdownStat(false);
   };
-  console.log(selectedCountry);
   return (
     <div className='App'>
       <div className='top'>
@@ -93,6 +108,10 @@ function App() {
           />
           <p className='footerNote'>
             Created and designed by <a href='https://prajeetshrestha.com.np/'>Prajeet</a>
+          </p>
+          <p className='InspireNote'>
+            Inspired by <a href='https://www.google.com/advanced_search'>Google Advance Search</a> {'&'}
+            <a href='https://share.streamlit.io/rajivsingha/geo-serp-creator/main/geo_serp_streamlit_lite.py'> Rajiv</a>
           </p>
         </div>
       ) : null}

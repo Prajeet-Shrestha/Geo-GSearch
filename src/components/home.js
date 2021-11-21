@@ -8,7 +8,7 @@ export default function Home() {
         <h1>Welcome to Geo G-Search</h1>
         <p>
           Geo G-Search is a extended search engine backed by google search APIs that primarily focus on providing
-          results that are from the selected country.
+          relevant results that are from the selected country.
         </p>
       </div>
     </div>

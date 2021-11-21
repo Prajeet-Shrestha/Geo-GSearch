@@ -249,7 +249,8 @@
   },
   {
     "Country": "Egypt",
-    "Code": "eg"
+    "Code": "eg",
+    "lang": "lang_ar"
   },
   {
     "Country": "El Salvador",

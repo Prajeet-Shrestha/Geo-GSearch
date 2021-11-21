@@ -13,7 +13,7 @@ export default function SearchItem({ title, link, htmlSnippet, snippet, formatte
           <div className={`link-url url-${index}`}>
             <div>{`${index == 0 ? 'https://' : ''}${data}`}</div>
             {index != format3.length - 1 ? (
-              <svg xmlns='http://www.w3.org/2000/svg' height='18px' viewBox='0 0 24 24' width='18px' fill='#5f6368'>
+              <svg xmlns='http://www.w3.org/2000/svg' height='14px' viewBox='0 0 24 24' width='14px' fill='#5f6368'>
                 <path d='M0 0h24v24H0z' fill='none' />
                 <path d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z' />
               </svg>
