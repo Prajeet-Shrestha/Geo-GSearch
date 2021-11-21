@@ -1,0 +1,31 @@
+.error-page {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  @media (max-width: 510px) {
+    flex-direction: column-reverse;
+    text-align: center;
+  }
+  h1 {
+    color: #202124;
+    margin-bottom: 0;
+  }
+  p {
+    margin-top: 5px;
+    font-size: 14px;
+    &.body {
+      color: #202124ac;
+    }
+    &.footerNote {
+      color: rgba($color: #000000, $alpha: 0.7);
+      font-size: 10px;
+    }
+  }
+  img {
+    display: block;
+    width: 100px;
+    height: 100px;
+  }
+}
