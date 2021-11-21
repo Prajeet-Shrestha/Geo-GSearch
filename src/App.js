@@ -19,6 +19,8 @@ function App() {
   const [isSearchPage, setSearchPage] = useState(false);
   const [isHomePage, setHomePage] = useState(true);
   const [error, setError] = useState(false);
+  const [isQuoteFull, setIsQuoteFull] = useState(false);
+
   const [searchWord, setSearchWord] = useState('');
   const [searchInformation, setSearchInformation] = useState({
     searchTime: 0,
@@ -29,11 +31,20 @@ function App() {
   const [SearchResultItems, setSearchResultItems] = useState([]);
   useEffect(() => {
     setViewCountryList(countryList);
+    var queryParams = new URLSearchParams(window.location.search);
+    const key = queryParams.get('key');
+    const country = queryParams.get('country');
+    if (key && country) {
+      setSearchKeyInput(key);
+      setSelectedCountry(country);
+      handleSearch(key, country);
+    }
   }, []);
 
   const handleClearSearch = () => {
     setSearchKeyInput('');
     toggleHomePage(true);
+    window.history.pushState({}, document.title, '/');
   };
 
   const parseSearchKeyWords = (value) => {
@@ -56,11 +67,15 @@ function App() {
 
   const handleSearch = async (searchWords, country) => {
     const { q, exactTerms } = await parseSearchKeyWords(searchWords);
-    console.log(getLang(country));
+
+    var queryParams = new URLSearchParams(window.location.search);
+
     G_Search(q, country, exactTerms, country)
       .then(async (res) => {
+        queryParams.set('key', q);
+        queryParams.set('country', country);
+        window.history.pushState(null, null, '?' + queryParams.toString());
         setSearchWord(q);
-
         console.log(res);
         // console.log(res.data.items);
 
@@ -77,9 +92,13 @@ function App() {
         // console.log(SearchResultItems);
       })
       .catch((err) => {
+        setIsQuoteFull(true);
         setError(true);
         setHasResults(false);
         toggleSearchPage(true);
+        queryParams.set('key', q);
+        queryParams.set('country', country);
+        window.history.pushState(null, null, '?' + queryParams.toString());
       });
   };
   const toggleSearchPage = (bool) => {
@@ -172,7 +191,7 @@ function App() {
       ) : null}
       {isSearchPage && !HasResults && error ? (
         <div className='search-result'>
-          <Error />
+          <Error isQuoteFull={isQuoteFull} />
         </div>
       ) : null}
       {/* <div className='footer-box'>
