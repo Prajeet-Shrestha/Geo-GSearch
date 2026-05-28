@@ -3,20 +3,33 @@ import DOMPurify from 'dompurify';
 
 const isHttpUrl = (url) => typeof url === 'string' && /^https?:\/\//i.test(url);
 
-const getThumbnail = (pagemap) => {
-  if (!pagemap) return null;
+const getThumbnailCandidates = (pagemap) => {
+  if (!pagemap) return [];
   const candidates = [
-    pagemap.cse_thumbnail?.[0]?.src,
-    pagemap.cse_image?.[0]?.src,
     pagemap.metatags?.[0]?.['og:image'],
     pagemap.metatags?.[0]?.['twitter:image'],
+    pagemap.cse_thumbnail?.[0]?.src,
+    pagemap.cse_image?.[0]?.src,
   ];
-  return candidates.find(isHttpUrl) ?? null;
+  return [...new Set(candidates.filter(isHttpUrl))];
+};
+
+const getFaviconUrl = (link) => {
+  if (!isHttpUrl(link)) return null;
+  try {
+    const { hostname } = new URL(link);
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=32`;
+  } catch {
+    return null;
+  }
 };
 
 export default function SearchItem({ title, link, htmlSnippet, snippet, formattedUrl, pagemap }) {
-  const [imgError, setImgError] = useState(false);
-  const thumb = getThumbnail(pagemap);
+  const [thumbIndex, setThumbIndex] = useState(0);
+  const [faviconError, setFaviconError] = useState(false);
+  const thumbs = getThumbnailCandidates(pagemap);
+  const thumb = thumbs[thumbIndex] ?? null;
+  const faviconUrl = getFaviconUrl(link);
 
   const formatUrl = (url) => {
     let format1 = url.replace('https://', '');
@@ -50,16 +63,35 @@ export default function SearchItem({ title, link, htmlSnippet, snippet, formatte
     <div className='search-item'>
       <div className='search-item-text'>
         <a className='href-link' href={link}>
-          <a>{formatUrl(formattedUrl)} </a>
+          <a>
+            {faviconUrl && !faviconError ? (
+              <img
+                className='search-item-favicon'
+                src={faviconUrl}
+                alt=''
+                width='16'
+                height='16'
+                loading='lazy'
+                onError={() => setFaviconError(true)}
+              />
+            ) : null}
+            {formatUrl(formattedUrl)}{' '}
+          </a>
           <h2>{title} </h2>
         </a>
 
         <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlSnippet) }}></p>
       </div>
 
-      {thumb && !imgError ? (
+      {thumb ? (
         <a className='search-item-thumb' href={link} tabIndex={-1} aria-hidden='true'>
-          <img src={thumb} alt='' loading='lazy' onError={() => setImgError(true)} />
+          <img
+            key={thumb}
+            src={thumb}
+            alt=''
+            loading='lazy'
+            onError={() => setThumbIndex((i) => i + 1)}
+          />
         </a>
       ) : null}
     </div>

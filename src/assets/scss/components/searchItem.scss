@@ -10,6 +10,14 @@
     min-width: 0;
   }
 
+  .search-item-favicon {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    flex-shrink: 0;
+    border-radius: 4px;
+  }
+
   .search-item-thumb {
     display: block;
     flex-shrink: 0;
