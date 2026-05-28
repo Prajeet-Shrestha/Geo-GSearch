@@ -20,6 +20,7 @@ function App() {
   const [isHomePage, setHomePage] = useState(true);
   const [error, setError] = useState(false);
   const [isQuoteFull, setIsQuoteFull] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [searchWord, setSearchWord] = useState('');
   const [searchInformation, setSearchInformation] = useState({
@@ -70,35 +71,32 @@ function App() {
 
     var queryParams = new URLSearchParams(window.location.search);
 
-    G_Search(q, country, exactTerms, country)
-      .then(async (res) => {
+    setError(false);
+    setIsLoading(true);
+    toggleSearchPage(true);
+
+    G_Search(q, country, exactTerms)
+      .then((res) => {
         queryParams.set('key', q);
         queryParams.set('country', country);
         window.history.pushState(null, null, '?' + queryParams.toString());
         setSearchWord(q);
-        console.log(res);
-        // console.log(res.data.items);
 
-        const items = res.data.items;
-        if (items) {
-          setHasResults(true);
-        } else {
-          setHasResults(false);
-        }
-        toggleSearchPage(true);
-        await setSearchResultItems(items ? items : []);
-        await setSearchInformation(res.data.searchInformation);
-
-        // console.log(SearchResultItems);
+        const items = res.items;
+        setHasResults(items ? true : false);
+        setSearchResultItems(items ? items : []);
+        setSearchInformation(res.searchInformation);
       })
       .catch((err) => {
-        setIsQuoteFull(true);
+        setIsQuoteFull(err.status === 429);
         setError(true);
         setHasResults(false);
-        toggleSearchPage(true);
         queryParams.set('key', q);
         queryParams.set('country', country);
         window.history.pushState(null, null, '?' + queryParams.toString());
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
   const toggleSearchPage = (bool) => {
@@ -165,13 +163,19 @@ function App() {
           </p>
         </div>
       ) : null}
-      {isSearchPage && HasResults && !error ? (
+      {isSearchPage && isLoading ? (
+        <div className='search-loader'>
+          <div className='spinner'></div>
+        </div>
+      ) : null}
+      {isSearchPage && !isLoading && HasResults && !error ? (
         <div className='search-result'>
           <p id='result-number'>
             About {searchInformation.formattedTotalResults} results ({searchInformation.formattedSearchTime} seconds){' '}
           </p>
           {SearchResultItems.map((data, index) => (
             <SearchItem
+              key={data.cacheId ?? data.link ?? index}
               title={data.title}
               formattedUrl={data.formattedUrl}
               link={data.link}
@@ -181,7 +185,7 @@ function App() {
           ))}
         </div>
       ) : null}
-      {isSearchPage && !HasResults && !error ? (
+      {isSearchPage && !isLoading && !HasResults && !error ? (
         <div className='search-result'>
           <p id='result-number'>
             About {searchInformation.formattedTotalResults} results ({searchInformation.formattedSearchTime} seconds){' '}
@@ -189,7 +193,7 @@ function App() {
           <NoResults searchKey={searchWord} />
         </div>
       ) : null}
-      {isSearchPage && !HasResults && error ? (
+      {isSearchPage && !isLoading && !HasResults && error ? (
         <div className='search-result'>
           <Error isQuoteFull={isQuoteFull} />
         </div>

@@ -19,6 +19,20 @@
       color: gray;
     }
   }
+  .search-loader {
+    width: 95%;
+    margin: 60px auto;
+    display: flex;
+    justify-content: center;
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid #e0e0e0;
+      border-top-color: #1a0dab;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
   .initial-home {
     p {
       margin-top: 0 auto;
@@ -66,5 +80,11 @@
         }
       }
     }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

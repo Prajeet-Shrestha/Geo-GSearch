@@ -51,6 +51,7 @@ export default function SearchBar({
           <div className='list-items'>
             {viewCountryList.map((data, index) => (
               <a
+                key={data.Code ?? index}
                 onClick={() => {
                   handleSelectCountry(data.Code);
                 }}

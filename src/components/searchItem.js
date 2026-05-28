@@ -1,4 +1,5 @@
 import React from 'react';
+import DOMPurify from 'dompurify';
 
 export default function SearchItem({ title, link, htmlSnippet, snippet, formattedUrl }) {
   const formatUrl = (url) => {
@@ -10,7 +11,7 @@ export default function SearchItem({ title, link, htmlSnippet, snippet, formatte
       let e = null;
       if (data != null) {
         e = (
-          <div className={`link-url url-${index}`}>
+          <div key={index} className={`link-url url-${index}`}>
             <div>{`${index == 0 ? 'https://' : ''}${data}`}</div>
             {index != format3.length - 1 ? (
               <svg xmlns='http://www.w3.org/2000/svg' height='14px' viewBox='0 0 24 24' width='14px' fill='#5f6368'>
@@ -36,7 +37,7 @@ export default function SearchItem({ title, link, htmlSnippet, snippet, formatte
         <h2>{title} </h2>
       </a>
 
-      <p dangerouslySetInnerHTML={{ __html: htmlSnippet }}></p>
+      <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlSnippet) }}></p>
     </div>
   );
 }
