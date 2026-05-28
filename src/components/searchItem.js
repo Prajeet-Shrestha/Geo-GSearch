@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import DOMPurify from 'dompurify';
 
-export default function SearchItem({ title, link, htmlSnippet, snippet, formattedUrl }) {
+const isHttpUrl = (url) => typeof url === 'string' && /^https?:\/\//i.test(url);
+
+const getThumbnail = (pagemap) => {
+  if (!pagemap) return null;
+  const candidates = [
+    pagemap.cse_thumbnail?.[0]?.src,
+    pagemap.cse_image?.[0]?.src,
+    pagemap.metatags?.[0]?.['og:image'],
+    pagemap.metatags?.[0]?.['twitter:image'],
+  ];
+  return candidates.find(isHttpUrl) ?? null;
+};
+
+export default function SearchItem({ title, link, htmlSnippet, snippet, formattedUrl, pagemap }) {
+  const [imgError, setImgError] = useState(false);
+  const thumb = getThumbnail(pagemap);
+
   const formatUrl = (url) => {
     let format1 = url.replace('https://', '');
     let format2 = format1.replace('http://', '');
@@ -31,13 +47,21 @@ export default function SearchItem({ title, link, htmlSnippet, snippet, formatte
   };
 
   return (
-    <div class='search-item'>
-      <a className='href-link' href={link}>
-        <a>{formatUrl(formattedUrl)} </a>
-        <h2>{title} </h2>
-      </a>
+    <div className='search-item'>
+      <div className='search-item-text'>
+        <a className='href-link' href={link}>
+          <a>{formatUrl(formattedUrl)} </a>
+          <h2>{title} </h2>
+        </a>
 
-      <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlSnippet) }}></p>
+        <p dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(htmlSnippet) }}></p>
+      </div>
+
+      {thumb && !imgError ? (
+        <a className='search-item-thumb' href={link} tabIndex={-1} aria-hidden='true'>
+          <img src={thumb} alt='' loading='lazy' onError={() => setImgError(true)} />
+        </a>
+      ) : null}
     </div>
   );
 }

@@ -23,6 +23,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [searchWord, setSearchWord] = useState('');
+  const [searchCountry, setSearchCountry] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
   const [searchInformation, setSearchInformation] = useState({
     searchTime: 0,
     formattedSearchTime: '0',
@@ -35,15 +39,19 @@ function App() {
     var queryParams = new URLSearchParams(window.location.search);
     const key = queryParams.get('key');
     const country = queryParams.get('country');
+    const page = queryParams.get('page');
     if (key && country) {
       setSearchKeyInput(key);
       setSelectedCountry(country);
-      handleSearch(key, country);
+      handleSearch(key, country, Number(page) || 1);
     }
   }, []);
 
   const handleClearSearch = () => {
     setSearchKeyInput('');
+    setCurrentPage(1);
+    setTotalPages(1);
+    setHasNextPage(false);
     toggleHomePage(true);
     window.history.pushState({}, document.title, '/');
   };
@@ -66,38 +74,57 @@ function App() {
     }
   };
 
-  const handleSearch = async (searchWords, country) => {
+  const handleSearch = async (searchWords, country, page = 1) => {
     const { q, exactTerms } = await parseSearchKeyWords(searchWords);
 
     var queryParams = new URLSearchParams(window.location.search);
+    const start = (page - 1) * 10 + 1;
 
     setError(false);
     setIsLoading(true);
     toggleSearchPage(true);
 
-    G_Search(q, country, exactTerms)
+    queryParams.set('key', q);
+    queryParams.set('country', country);
+    if (page > 1) {
+      queryParams.set('page', page);
+    } else {
+      queryParams.delete('page');
+    }
+
+    G_Search(q, country, exactTerms, start)
       .then((res) => {
-        queryParams.set('key', q);
-        queryParams.set('country', country);
         window.history.pushState(null, null, '?' + queryParams.toString());
         setSearchWord(q);
+        setSearchCountry(country);
+        setCurrentPage(page);
 
         const items = res.items;
         setHasResults(items ? true : false);
         setSearchResultItems(items ? items : []);
-        setSearchInformation(res.searchInformation);
+        setSearchInformation(
+          res.searchInformation ?? { formattedSearchTime: '0', formattedTotalResults: '0' }
+        );
+
+        const total = Number(res.searchInformation?.totalResults || 0);
+        setTotalPages(Math.min(10, Math.max(1, Math.ceil(total / 10))));
+        setHasNextPage(Boolean(res.queries?.nextPage?.length));
       })
       .catch((err) => {
         setIsQuoteFull(err.status === 429);
         setError(true);
         setHasResults(false);
-        queryParams.set('key', q);
-        queryParams.set('country', country);
         window.history.pushState(null, null, '?' + queryParams.toString());
       })
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  const handlePageChange = (page) => {
+    if (page === currentPage) return;
+    handleSearch(searchWord, searchCountry, page);
+    window.scrollTo({ top: 0 });
   };
   const toggleSearchPage = (bool) => {
     setHomePage(!bool);
@@ -171,7 +198,7 @@ function App() {
       {isSearchPage && !isLoading && HasResults && !error ? (
         <div className='search-result'>
           <p id='result-number'>
-            About {searchInformation.formattedTotalResults} results ({searchInformation.formattedSearchTime} seconds){' '}
+            About {searchInformation?.formattedTotalResults} results ({searchInformation?.formattedSearchTime} seconds){' '}
           </p>
           {SearchResultItems.map((data, index) => (
             <SearchItem
@@ -181,6 +208,7 @@ function App() {
               link={data.link}
               htmlSnippet={data.htmlSnippet}
               snippet={data.snippet}
+              pagemap={data.pagemap}
             />
           ))}
         </div>
@@ -188,7 +216,7 @@ function App() {
       {isSearchPage && !isLoading && !HasResults && !error ? (
         <div className='search-result'>
           <p id='result-number'>
-            About {searchInformation.formattedTotalResults} results ({searchInformation.formattedSearchTime} seconds){' '}
+            About {searchInformation?.formattedTotalResults} results ({searchInformation?.formattedSearchTime} seconds){' '}
           </p>
           <NoResults searchKey={searchWord} />
         </div>
@@ -198,9 +226,16 @@ function App() {
           <Error isQuoteFull={isQuoteFull} />
         </div>
       ) : null}
-      {/* <div className='footer-box'>
-        <Footer />
-      </div> */}
+      {isSearchPage && !isLoading && !error && (HasResults || currentPage > 1) ? (
+        <div className='footer-box'>
+          <Footer
+            currentPage={currentPage}
+            totalPages={totalPages}
+            hasNextPage={hasNextPage}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

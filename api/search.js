@@ -11,7 +11,7 @@ const deriveLang = (country) => {
 };
 
 module.exports = async (req, res) => {
-  const { q, country = '', exactTerms = '' } = req.query;
+  const { q, country = '', exactTerms = '', start = '1' } = req.query;
 
   if (!q) {
     return res.status(400).json({ error: 'Missing query' });
@@ -19,6 +19,8 @@ module.exports = async (req, res) => {
   if (!process.env.GOOGLE_API_KEY || !process.env.GOOGLE_CX) {
     return res.status(500).json({ error: 'Server misconfigured' });
   }
+
+  const startNum = Math.min(Math.max(parseInt(start, 10) || 1, 1), 91);
 
   const params = new URLSearchParams({
     key: process.env.GOOGLE_API_KEY,
@@ -28,6 +30,9 @@ module.exports = async (req, res) => {
     safe: 'active',
     num: '10',
   });
+  if (startNum > 1) {
+    params.set('start', String(startNum));
+  }
   if (country) {
     params.set('gl', country);
     params.set('cr', `country${country.toUpperCase()}`);
