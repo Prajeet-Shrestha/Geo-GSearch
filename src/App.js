@@ -61,7 +61,7 @@ function App() {
     let exactTerms = value.match(regex);
     return {
       q: value,
-      exactTerms: exactTerms ? exactTerms[0] : '',
+      exactTerms: exactTerms ? exactTerms[0].slice(1, -1) : '',
     };
   };
 

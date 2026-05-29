@@ -26,10 +26,12 @@ module.exports = async (req, res) => {
     key: process.env.GOOGLE_API_KEY,
     cx: process.env.GOOGLE_CX,
     q,
-    exactTerms: exactTerms || q,
     safe: 'active',
     num: '10',
   });
+  if (exactTerms) {
+    params.set('exactTerms', exactTerms);
+  }
   if (startNum > 1) {
     params.set('start', String(startNum));
   }
